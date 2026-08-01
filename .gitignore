@@ -1,0 +1,32 @@
+# Binarios compilados
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Salida de los tests
+*.test
+*.out
+coverage.*
+
+# Directorio de trabajo de go work
+go.work
+go.work.sum
+
+# Variables de entorno (semana 4) — nunca se suben
+.env
+.env.*
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Ajustes locales de Claude Code (personales, no del proyecto)
+.claude/settings.local.json
