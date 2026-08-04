@@ -30,3 +30,8 @@ desktop.ini
 
 # Ajustes locales de Claude Code (personales, no del proyecto)
 .claude/settings.local.json
+
+# Bases de datos locales (ejemplos de SQLite)
+*.db
+*.sqlite
+*.sqlite3

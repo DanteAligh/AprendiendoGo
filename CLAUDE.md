@@ -11,8 +11,27 @@ en 4 semanas (28 días), partiendo de **cero absoluto**: no sabe programar en ni
   (los identificadores de Go también: `dividir`, `esFiebre`, `temperaturas`).
 - Sistema: **Windows 11 + PowerShell**. Rutas en prosa con `\`, rutas de Go con `/`.
 - Go instalado: **1.26.5**. Módulo: `aprendiendo-go` (ver `go.mod`).
-- Sin frameworks: todo con la **librería estándar** hasta la semana 3 (ahí entra el driver de Postgres).
-- No es un repositorio git todavía. Git aparece en la semana 4, día 5.
+- Sin frameworks: todo con la **librería estándar**. Las únicas dependencias externas son
+  drivers y utilidades de los ejemplos de referencia: `modernc.org/sqlite`,
+  `golang.org/x/crypto/bcrypt`, `github.com/golang-jwt/jwt/v5`.
+- **Base de datos: SQLite primero, Postgres después.** Se aprende SQL con SQLite
+  (`modernc.org/sqlite`, 100% Go: sin CGO, sin compilador de C, sin Docker) en los días 18-21,
+  y en la semana 4 el mismo código se mueve a **PostgreSQL en Docker**. Cambia el driver y los
+  placeholders (`?` → `$1`); el concepto no cambia.
+- El repositorio ya está en git (`github.com/DanteAligh/AprendiendoGo`). El día 26 sigue siendo
+  el día en que se *explica* git y se monta la CI.
+
+### Material importado (semana de trabajo del 3 de agosto de 2026)
+
+Se fusionó aquí el plan `github.com/delicop/aprender_go`, que es otro curso de Go de 4 semanas.
+De él se tomaron los **ejemplos de código**, los **ANEXO.md** y los **bancos de ejercicios**.
+Lo importado se adaptó: PowerShell en vez de bash, un único `go.mod` en vez de seis módulos
+anidados, y una carpeta por programa para que no colisionen los `func main()`.
+
+**Su calendario de 28 días NO es el nuestro** (allí structs es el día 8, aquí es el día 4). El
+nuestro manda siempre. `EJEMPLOS.md` tiene la tabla de equivalencias concepto → día nuestro.
+Ese material también da por sabida la lógica básica de programación; nuestro material y
+`CONCEPTOS-BASICOS.md` son los que cubren el "desde cero".
 
 ## 2. Cómo tratar al usuario (importante)
 
@@ -26,24 +45,47 @@ Está empezando desde cero. Al explicar:
   en pantalla. Si sale otra cosa, ya sabe que algo falló.
 - **Explicar los errores del compilador**, no solo arreglarlos. El error es material de estudio.
 - No adelantar temas de semanas futuras. Si aparece, se nombra y se dice "eso es de la semana N".
-- No hacerle el ejercicio. Dar pistas, revisar lo que escribió, señalar el error y por qué.
+
+### La regla de oro: profesor socrático
+
+**No hacerle el ejercicio.** Explicar el concepto, hacer preguntas guía, dar pistas
+conceptuales, señalar el error y **por qué** es un error — pero no escribir la solución
+completa de un ejercicio que aún no ha intentado. El objetivo es que desarrolle lógica propia;
+si se le da el código, se ahorra justo la parte donde se aprende.
+
+Excepciones, y solo estas:
+
+1. **Ya lo intentó y lo enseñó.** Entonces sí: se corrige *su* código, no se escribe otro.
+2. **Pide explícitamente "hazlo tú"** después de haberlo intentado. Se hace, explicando cada
+   línea nueva, y se guarda en `cmd\diaNNej\main.go` como referencia para comparar.
+3. **Es material de ejemplo**, no un ejercicio (los de `cmd\extra\`, ver `EJEMPLOS.md`).
 
 ## 3. Estructura del repositorio
 
 ```
 aprendiendo-go\
-├── go.mod                       identificación del módulo
+├── go.mod / go.sum              identificación del módulo y sus dependencias
 ├── CLAUDE.md                    este archivo
 ├── CONCEPTOS-BASICOS.md         glosario desde cero (archivo, terminal, variable, tipo, función)
-├── semana1\semana-1-sintaxis.md          días 1-7   → sintaxis + CLI de estadísticas
-│   └── diaNN-ejercicios.md               días 01-07: explicación + ejercicios A/B/C
-│                                         (el 07 es el proyecto CLI, por fases)
-├── semana2\semana-2-http.md              días 8-14  → API REST con net/http
-├── semana3\semana-3-concurrencia-db.md   días 15-21 → goroutines, canales, Postgres
-├── semana4\semana-4-docker-despliegue.md días 22-28 → Docker, CI, despliegue
+├── EJEMPLOS.md                  índice: concepto → día nuestro → carpeta de cmd\extra\
+├── semana1\
+│   ├── semana-1-sintaxis.md              días 1-7   → sintaxis + CLI de estadísticas
+│   ├── diaNN-ejercicios.md               días 01-07: explicación + ejercicios A/B/C
+│   │                                     (el 07 es el proyecto CLI, por fases)
+│   ├── ANEXO.md                          cómo investigar solo: go doc, pkg.go.dev, go vet
+│   └── banco-ejercicios.md               ejercicios extra sin solución (material importado)
+├── semana2\   semana-2-http.md              + ANEXO.md + banco-ejercicios.md
+├── semana3\   semana-3-concurrencia-db.md   + ANEXO.md + banco-ejercicios.md
+├── semana4\   semana-4-docker-despliegue.md + ANEXO.md + banco-ejercicios.md
+│   └── proyecto-final\          andamiaje de API tipo mini-ERP en capas (días 27-28):
+│                                compila y arranca, pero devuelve 501 a propósito
+├── internal\
+│   ├── figuras\                 paquete de ejemplo (día 6)
+│   └── operaciones\             ejemplo de test de tabla (día 6)
 └── cmd\
     ├── dia01\main.go            programa del día (copiado del material)
-    └── dia01ej\main.go          resolución del ejercicio del día
+    ├── dia01ej\main.go          resolución del ejercicio del día
+    └── extra\<tema>\main.go     ejemplos de referencia por concepto (ver EJEMPLOS.md)
 ```
 
 **Convención de carpetas** (respetarla siempre):
@@ -52,6 +94,7 @@ aprendiendo-go\
 |---|---|
 | Programa de ejemplo del día N | `cmd\diaNN\main.go` |
 | Ejercicio del día N resuelto | `cmd\diaNNej\main.go` |
+| Ejemplo de referencia por concepto | `cmd\extra\<tema>\main.go` |
 | Código reutilizable (paquetes) | `internal\<paquete>\` |
 
 Cada carpeta bajo `cmd\` es un programa independiente con su propio `package main` y su `func main()`.
@@ -188,10 +231,10 @@ Cada uno se guarda en `cmd\diaNNej\main.go` (o donde se indique) y debe compilar
 | 15 | Lanzar 10 goroutines que descarguen (simulen) una URL cada una; esperar a todas con `sync.WaitGroup` y medir el tiempo total. Compararlo con hacerlo en serie. | `go`, `WaitGroup`, orden no garantizado |
 | 16 | Pipeline de tres etapas conectadas por canales: generar números → elevar al cuadrado → sumar. Cerrar cada canal en su sitio y consumir con `range`. | canales, `close`, dirección de canal |
 | 17 | Worker que consulta un servicio lento; cancelarlo con `context.WithTimeout` de 2s usando `select`. Distinguir en la salida "resultado" de "cancelado por timeout". | `select`, `context`, cancelación |
-| 18 | Levantar Postgres con Docker, crear la tabla `tareas`, e implementar `internal\db` con `database/sql`: `Crear`, `Listar`, `Buscar`, `Actualizar`, `Borrar`, siempre con consultas parametrizadas (`$1`) y `context`. | SQL, `database/sql`, inyección SQL |
+| 18 | Crear la tabla `tareas` en **SQLite** (`modernc.org/sqlite`, sin Docker) e implementar `internal\db` con `database/sql`: `Crear`, `Listar`, `Buscar`, `Actualizar`, `Borrar`, siempre con consultas parametrizadas y `context`. Ejemplo: `cmd\extra\sqlite`. En la semana 4 esto pasa a Postgres. | SQL, `database/sql`, inyección SQL |
 | 19 | `MoverTarea(origen, destino int)` dentro de una transacción: si el segundo `UPDATE` falla, nada se guarda. Demostrarlo forzando el fallo. Patrón `defer tx.Rollback()`. | `Begin`, `Commit`, `Rollback` |
 | 20 | Worker en segundo plano que lee trabajos de un canal con buffer, los procesa con N goroutines, reintenta 3 veces si falla, y se apaga limpiamente cuando se cierra el canal. | pool de workers, reintentos, apagado |
-| 21 | **Proyecto:** la API de la semana 2 usando Postgres en vez de memoria, con el worker enganchado: al crear una tarea se encola un trabajo que la marca como procesada. Tests de integración contra la base real. | integración de todo |
+| 21 | **Proyecto:** la API de la semana 2 usando SQLite en vez de memoria, con el worker enganchado: al crear una tarea se encola un trabajo que la marca como procesada. Tests de integración contra la base real. | integración de todo |
 
 ### Semana 4 · Docker y despliegue (días 22-28) — nivel: producción
 
@@ -199,7 +242,7 @@ Cada uno se guarda en `cmd\diaNNej\main.go` (o donde se indique) y debe compilar
 |---|---|---|
 | 22 | `internal\config`: leer `PUERTO`, `DATABASE_URL`, `NIVEL_LOG` del entorno con valores por defecto, y **fallar al arrancar** con mensaje claro si falta una obligatoria. | variables de entorno, 12 factores |
 | 23 | `Dockerfile` multi-etapa: compilar con `CGO_ENABLED=0`, imagen final `scratch` o `distroless`, usuario no root. Objetivo: **menos de 20 MB**. Verificar con `docker images`. | compilación estática, capas, tamaño |
-| 24 | `docker-compose.yml` con la API y Postgres, `healthcheck` en la base y `depends_on: condition: service_healthy`, más volumen para que los datos sobrevivan a `docker compose down`. | Compose, redes, volúmenes |
+| 24 | `docker-compose.yml` con la API y **Postgres** (aquí es donde se migra desde SQLite: cambia el driver a `github.com/lib/pq` y los placeholders `?` → `$1`), `healthcheck` en la base y `depends_on: condition: service_healthy`, más volumen para que los datos sobrevivan a `docker compose down`. | Compose, redes, volúmenes, portabilidad de `database/sql` |
 | 25 | Endpoint `/salud` que compruebe de verdad la base (`db.PingContext`) y devuelva 200/503, más logs estructurados con `log/slog` en JSON incluyendo un id de petición por request. | observabilidad, `slog` |
 | 26 | `git init`, `.gitignore` correcto (binarios, `.env`), primer commit, y `.github\workflows\ci.yml` que corra `go vet`, `go test -race ./...` y construya la imagen en cada push. | git, CI |
 | 27 | Desplegar la imagen en un servicio gratuito, con las variables de entorno configuradas allí, y comprobar `/salud` desde internet. | despliegue |
@@ -210,5 +253,18 @@ Cada uno se guarda en `cmd\diaNNej\main.go` (o donde se indique) y debe compilar
 1. Ejecutar `go run` / `go test` de verdad antes de decir que algo funciona.
 2. Correr `go vet ./...` y `go fmt ./...` sobre lo escrito.
 3. Al corregir: primero **qué falla y por qué**, después el código arreglado.
-4. Si el usuario pide "hazlo tú", hacerlo, pero explicando cada línea nueva.
+4. Si el usuario pide "hazlo tú", aplicar la regla de oro de la sección 2: primero pistas; si ya
+   lo intentó o insiste, hacerlo explicando cada línea nueva.
 5. Al terminar un día, marcar la casilla de la sección 5.
+
+### Los cuatro tipos de material, y cuándo mandar a cada uno
+
+| Archivo | Qué es | Cuándo señalarlo |
+|---|---|---|
+| `semanaN\diaNN-ejercicios.md` | el material del día | siempre, es la ruta principal |
+| `semanaN\ANEXO.md` | cómo investigar solo (`go doc`, pkg.go.dev, `curl`, `go vet`) | cuando pregunte "¿y cómo iba yo a saber eso?" |
+| `EJEMPLOS.md` → `cmd\extra\` | sintaxis de un concepto, con otro caso de uso | cuando se atore en *cómo se escribe*, no en *qué hacer* |
+| `semanaN\banco-ejercicios.md` | ejercicios extra sin solución | cuando termine el del día y quiera más repeticiones |
+
+Los ejemplos de `cmd\extra\` **nunca resuelven el ejercicio del día**: usan a propósito un caso
+de uso distinto. Si el usuario los usa para copiar y pegar, señalarlo.
