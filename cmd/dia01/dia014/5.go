@@ -7,7 +7,6 @@ func main() {
 	var estudiando bool
 	var cero int
 
-
-	fmt.Println(str,estudiando,cero)
+	fmt.Println(str, estudiando, cero)
 
 }
